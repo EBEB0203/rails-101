@@ -1,5 +1,5 @@
 class GroupsController < ApplicationController
-  before_action :authenticate_user! , only: [:new, :create] #authenticate_user!是 devise 提供的内建功能。
+  before_action :authenticate_user! , only: [:new, :create, :edit, :update, :destroy] #authenticate_user!是 devise 提供的内建功能。
                                                    #before_action :authenticate_user! 后面不加任何东西，表示这个 controller 下的所有 action 都要登入。
   def index
     @group = Group.all #撈出所有的群
@@ -12,6 +12,9 @@ class GroupsController < ApplicationController
   end
   def edit
     @group = Group.find(params[:id])
+    if current_user != @group.user
+      redirect_to root_path, alert: "你沒有權限"
+    end
   end
   def create
     @group = Group.new(group_params)
@@ -24,6 +27,9 @@ class GroupsController < ApplicationController
   end
   def update
     @group = Group.find(params[:id])
+    if current_user != @group.user
+      redirect_to root_path, alert: "你沒有權限"
+    end
     if @group.update(group_params)
       redirect_to groups_path, notice: "Update Success"
     else
@@ -32,6 +38,9 @@ class GroupsController < ApplicationController
   end
   def destroy
     @group = Group.find(params[:id])
+    if current_user != @group.user
+      redirect_to root_path, alert: "你沒有權限"
+    end
     @group.destroy
     flash[:alert] = "Group deleted"
     redirect_to groups_path
