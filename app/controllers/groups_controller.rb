@@ -1,5 +1,5 @@
 class GroupsController < ApplicationController
-  before_action :authenticate_user! , only: [:new] #authenticate_user!是 devise 提供的内建功能。
+  before_action :authenticate_user! , only: [:new, :create] #authenticate_user!是 devise 提供的内建功能。
                                                    #before_action :authenticate_user! 后面不加任何东西，表示这个 controller 下的所有 action 都要登入。
   def index
     @group = Group.all #撈出所有的群
@@ -15,6 +15,7 @@ class GroupsController < ApplicationController
   end
   def create
     @group = Group.new(group_params)
+    @group.user = current_user
     if @group.save
       redirect_to groups_path #重新連結到首頁
     else
