@@ -1,5 +1,5 @@
 class GroupsController < ApplicationController
-  before_action :authenticate_user! , only: [:new, :create, :edit, :join, :update, :destroy] #authenticate_user!是 devise 提供的内建功能。
+  before_action :authenticate_user! , only: [:new, :create, :edit, :join, :quit, :update, :destroy] #authenticate_user!是 devise 提供的内建功能。
                                                    #before_action :authenticate_user! 后面不加任何东西，表示这个 controller 下的所有 action 都要登入。
   before_action :find_group_and_check_permission, only: [:edit, :update, :destroy] #在def edit.update.destroy開頭執行find_group_and_check_permission
 
@@ -22,6 +22,7 @@ class GroupsController < ApplicationController
     @group = Group.new(group_params)
     @group.user = current_user
     if @group.save
+      current_user.join!(@group)
       redirect_to groups_path #重新連結到首頁
     else
       render:new
@@ -42,7 +43,7 @@ class GroupsController < ApplicationController
     redirect_to groups_path
   end
     def join
-     @group = Group.find(params[:id])
+     @group = Group.find(params[:id]) #current_user 沒有定義 是從 authenticate_user! 裡來的 所以要設定 join 跟quit上去
     # current_user = User.find(1)
       if !current_user.is_member_of?(@group)
         current_user.join!(@group)
