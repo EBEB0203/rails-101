@@ -1,7 +1,8 @@
 class GroupsController < ApplicationController
-  before_action :authenticate_user! , only: [:new, :create, :edit, :update, :destroy] #authenticate_user!是 devise 提供的内建功能。
+  before_action :authenticate_user! , only: [:new, :create, :edit, :join, :update, :destroy] #authenticate_user!是 devise 提供的内建功能。
                                                    #before_action :authenticate_user! 后面不加任何东西，表示这个 controller 下的所有 action 都要登入。
   before_action :find_group_and_check_permission, only: [:edit, :update, :destroy] #在def edit.update.destroy開頭執行find_group_and_check_permission
+
   def index
     @group = Group.all #撈出所有的群
   end
@@ -40,7 +41,31 @@ class GroupsController < ApplicationController
     flash[:alert] = "Group deleted"
     redirect_to groups_path
   end
+    def join
+     @group = Group.find(params[:id])
+    # current_user = User.find(1)
+      if !current_user.is_member_of?(@group)
+        current_user.join!(@group)
+        flash[:notice] = "加入本讨论版成功！"
+      else
+        flash[:warning] = "你已经是本讨论版成员了！"
+      end
 
+      redirect_to group_path(@group)
+    end
+
+    def quit
+      @group = Group.find(params[:id])
+
+      if current_user.is_member_of?(@group)
+        current_user.quit!(@group)
+        flash[:alert] = "已退出本讨论版！"
+      else
+        flash[:warning] = "你不是本讨论版成员，怎么退出 XD"
+      end
+
+      redirect_to group_path(@group)
+    end
  private
  def find_group_and_check_permission
    @group = Group.find(params[:id])
