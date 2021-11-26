@@ -43,8 +43,7 @@ class GroupsController < ApplicationController
     redirect_to groups_path
   end
     def join
-     @group = Group.find(params[:id]) #current_user 沒有定義 是從 authenticate_user! 裡來的 所以要設定 join 跟quit上去
-    # current_user = User.find(1)
+     @group = Group.find(params[:id]) #current_user 要設定 join 跟quit上去
       if !current_user.is_member_of?(@group)
         current_user.join!(@group)
         flash[:notice] = "加入本讨论版成功！"

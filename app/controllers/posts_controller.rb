@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_action :authenticate_user!, :only => [:new, :create] #代表new.create需要登入
+  before_action :authenticate_user!, :only => [:new, :create, :destroy] #代表new.create需要登入
   def new
     @group = Group.find(params[:group_id])
     @post = Post.new
@@ -14,6 +14,15 @@ class PostsController < ApplicationController
     else
       render :new
     end
+  end
+  def destroy
+    @post = Post.find(params[:id])
+    if current_user != @post.user
+      redirect_to root_path, alert: "You have no permission."
+    end
+    @post.destroy
+    flash[:alert] = "posts deleted"
+    redirect_to account_posts_path
   end
   private
   def post_params
