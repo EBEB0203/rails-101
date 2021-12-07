@@ -15,6 +15,17 @@ class PostsController < ApplicationController
       render :new
     end
   end
+  def update
+    @post = Post.find(params[:id])
+    if current_user != @post.user
+      redirect_to root_path, alert: "You have no permission."
+    end
+    if @post.update(post_params)
+      redirect_to account_posts_path, notice: "Update Success"
+    else
+      render:edit
+    end
+  end
   def destroy
     @post = Post.find(params[:id])
     if current_user != @post.user
@@ -23,6 +34,13 @@ class PostsController < ApplicationController
     @post.destroy
     flash[:alert] = "posts deleted"
     redirect_to account_posts_path
+  end
+  def edit
+    @group = Group.find(params[:group_id])
+    @post = Post.find(params[:id])
+    if current_user != @post.user
+      redirect_to root_path, alert: "You have no permission."
+    end
   end
   private
   def post_params
