@@ -1,0 +1,15 @@
+    <tr>
+      <td>#</td>
+      <td><%= link_to(group.title, group_path(group)) %></td>
+      <td><%= render_group_description(group) %></td>
+      <td><%= group.user.email %></td>
+      <td>
+        <% if current_user && current_user == group.user %>
+          <%= link_to("Edit", edit_group_path(group), class: "btn btn-sm btn-default")%>
+          <%= link_to("Delete", group_path(group),    class: "btn btn-sm btn-default",
+                      method: :delete, data: { confirm: "Are you sure?" } )%>
+                      <!-- method:delete 是一个要按钮才触发的动作，会对 Rails 送出 [DELETE] 的请求，这样 Rails 就知道是去找 destroy action
+                          data: { confirm: "Are you sure?" 则是 Rails 触发确认讯息的方法。 -->
+        <% end %>                  
+      </td>
+    </tr>
